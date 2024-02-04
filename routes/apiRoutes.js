@@ -1,24 +1,14 @@
-const express = require('express');
-const { esClient, createIndex } = require('./elasticsearchService');
 
-const app = express()
-const PORT = 3000;
-
-app.use(express.json())
-
-app.get("/", (req, res) => {
-    res.send("hello in elasticsearch CRUD project")
-})
 
 // Create an elasticsearch index
-app.post('/createIndex', async (req, res) => {
+router.post('/createIndex', async (req, res) => {
     const indexName = req.body.indexName;
     await createIndex(indexName);
     res.json({ message: `${indexName} created successfully` });
 });
 
 // Indexing documents
-app.post('/indexDocument', async (req, res) => {
+router.post('/indexDocument', async (req, res) => {
     try {
         const indexName = req.body.indexName;
         const document = req.body.document;
@@ -34,7 +24,7 @@ app.post('/indexDocument', async (req, res) => {
 });
 
 //Get all documents
-app.get('/documents', async (req, res) => {
+router.get('/documents', async (req, res) => {
     try {
         const indexName = req.query.indexName;
         const result = await esClient.search({
@@ -49,7 +39,7 @@ app.get('/documents', async (req, res) => {
 });
 
 // Get a document by name
-app.get('/documents/byName', async (req, res) => {
+router.get('/documents/byName', async (req, res) => {
     const documentName = req.query.documentName; 
     const indexName = req.query.indexName;
     try {
@@ -73,7 +63,7 @@ app.get('/documents/byName', async (req, res) => {
 });
 
 // Update a document by ID
-app.put('/documents/:id', async (req, res) => {
+router.put('/documents/:id', async (req, res) => {
     const documentId = req.params.id;
     const indexName = req.query.indexName;
     const updatedDocumentData = req.body;
@@ -95,7 +85,7 @@ app.put('/documents/:id', async (req, res) => {
 });
 
 // Delete a document by ID
-app.delete('/documents/:id', async (req, res) => {
+router.delete('/documents/:id', async (req, res) => {
     const documentId = req.params.id;
     const indexName = req.query.indexName;
     try {
@@ -114,8 +104,4 @@ app.delete('/documents/:id', async (req, res) => {
     }
 });
 
-
-//to start the server
-app.listen(PORT, () => {
-    console.log(`Server is listening on port ${PORT}`)
-})
+module.exports = router;

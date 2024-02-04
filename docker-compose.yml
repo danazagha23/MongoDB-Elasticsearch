@@ -26,6 +26,17 @@ services:
       - elastic
     depends_on:
       - elasticsearch
+      - mongo
+  mongo:
+    image: "mongo:latest"
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - elastic
+volumes:
+  mongodb-data:
 networks:
   elastic:
     driver: bridge
