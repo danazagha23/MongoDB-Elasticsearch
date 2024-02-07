@@ -1,5 +1,4 @@
 const User = require('../models/user');
-const elasticsearchService = require('./elasticsearchService');
 
 
 class UserService {
@@ -7,21 +6,15 @@ class UserService {
     try {
       const newUser = new User(userData);
       const savedUser = await newUser.save();
-
-      // Remove internal fields
-      const userWithoutInternalFields = savedUser.toObject();
-      delete userWithoutInternalFields._id;
-      delete userWithoutInternalFields.__v;
-
-      const documentId = savedUser._id.toString();
-      await elasticsearchService.index_Document('users', documentId, userWithoutInternalFields);
       
       return savedUser;
     } catch (error) {
       console.error('Error creating user:', error);
       throw error;
+      }
+
     }
-  }
+  
 
   async getAllUsers() {
     try {
@@ -45,8 +38,6 @@ class UserService {
     try {
       const updatedUser = await User.findByIdAndUpdate(userId, updatedUserData, { new: true });
 
-      await elasticsearchService.update_Document('users', userId, updatedUserData);
-
       return updatedUser;
     } catch (error) {
       console.error('Error updating user:', error);
@@ -57,8 +48,6 @@ class UserService {
   async deleteUser(userId) {
     try {
       const deletedUser = await User.findByIdAndDelete(userId);
-
-      await elasticsearchService.delete_Document("users", userId);
 
       return deletedUser;
     } catch (error) {

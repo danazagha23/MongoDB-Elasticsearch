@@ -31,8 +31,16 @@ services:
     image: "mongo:latest"
     ports:
       - "27017:27017"
+    command: /usr/bin/mongod --bind_ip_all --replSet rs0 --dbpath /data/db 
     volumes:
-      - mongodb-data:/data/db
+      - mongodb-data:/data/
+    healthcheck:
+      test: echo "try { rs.status() } catch (err) { rs.initiate({_id:'rs0',members:[{_id:0,host:'host.docker.internal:27017'}]}) }" | mongosh --port 27017 --quiet
+      interval: 5s
+      timeout: 30s
+      start_period: 0s
+      start_interval: 1s
+      retries: 30  
     networks:
       - elastic
 volumes:

@@ -1,4 +1,4 @@
-const mongoose = require('../services/mongooseService');
+const mongoose = require('mongoose');
 
 const orderSchema = new mongoose.Schema({
     user: {

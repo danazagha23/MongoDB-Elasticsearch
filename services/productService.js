@@ -6,14 +6,6 @@ class ProductService {
     try {
       const newProduct = new Product(productData);
       const savedProduct = await newProduct.save();
-
-      // Remove internal fields
-      const productWithoutInternalFields = savedProduct.toObject();
-      delete productWithoutInternalFields._id;
-      delete productWithoutInternalFields.__v;
-
-      const documentId = savedProduct._id.toString();
-      await elasticsearchService.index_Document('products', documentId, productWithoutInternalFields);
       
       return savedProduct;
     } catch (error) {
@@ -44,7 +36,7 @@ class ProductService {
     try {
       const updatedProduct = await Product.findByIdAndUpdate(productId, updatedProductData, { new: true });
 
-      return await elasticsearchService.update_Document('products', productId, updatedProductData);
+      return updatedProduct;
 
     } catch (error) {
       console.error('Error updating product:', error);
@@ -56,7 +48,7 @@ class ProductService {
     try {
       const deletedProduct = await Product.findByIdAndDelete(productId);
 
-      return await elasticsearchService.delete_Document('products', productId);
+      return deletedProduct;
 
     } catch (error) {
       console.error('Error deleting product:', error);
