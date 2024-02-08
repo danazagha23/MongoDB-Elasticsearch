@@ -58,12 +58,13 @@ mongoose.connect('mongodb://mongodb-elasticsearch-mongo-1:27017?replicaSet=rs0')
     });
 
 async function handleModelChange(modelName, change) {
-    const { operationType, fullDocument, documentKey } = change;
+    const operationType = change.operationType;
 
-    const documentId = documentKey._id.toString();
+    const documentId = change.documentKey._id.toString();
 
     switch (operationType) {
         case 'insert':
+            const fullDocument = change.fullDocument;
             console.log(`Document inserted in ${modelName}:`, fullDocument);
 
             // Remove internal fields
@@ -73,12 +74,13 @@ async function handleModelChange(modelName, change) {
             await elasticsearchService.index_Document(modelName, documentId, fullDocument);
             break;
         case 'update':
-            console.log(`Document updated in ${modelName}:`, fullDocument);
-            
-            await elasticsearchService.update_Document(modelName, documentKey._id, fullDocument);
+            const updatedFields = change.updateDescription.updatedFields;
+            console.log(`Document updated in ${modelName}:`, updatedFields);
+
+            await elasticsearchService.update_Document(modelName, documentId, updatedFields);
             break;
         case 'delete':
-            console.log(`Document deleted in ${modelName}:`, documentKey);
+            console.log(`Document deleted in ${modelName}:`, documentId);
             await elasticsearchService.delete_Document(modelName, documentId);
             break;
         default:
