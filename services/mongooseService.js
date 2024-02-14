@@ -1,12 +1,14 @@
 const mongoose = require('mongoose');
-const User = require('../models/user');
+const User = require('../models/user').User;
 const Product = require('../models/product');
 const Order = require('../models/order');
 
 const elasticsearchService = require('./elasticsearchService');
 
+const mongodbUrl = process.env.MONGODB_URI;
+
 // Connect to MongoDB
-mongoose.connect('mongodb://mongodb-elasticsearch-mongo-1:27017?replicaSet=rs0')
+mongoose.connect(mongodbUrl)
     .then(() => {
         console.log("Connected to MongoDB successfully");
         

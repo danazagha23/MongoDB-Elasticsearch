@@ -1,10 +1,15 @@
-const User = require('../models/user');
+const { User, Admin, Customer} = require('../models/user');
 
 
 class UserService {
   async createUser(userData) {
     try {
-      const newUser = new User(userData);
+      let newUser;
+      if (userData.email === process.env.ADMIN_EMAIL.toLowerCase()) {
+          newUser = new Admin(userData);
+      } else {
+          newUser = new Customer(userData);
+      }
       const savedUser = await newUser.save();
       
       return savedUser;
@@ -13,7 +18,7 @@ class UserService {
       throw error;
       }
 
-    }
+  }
   
 
   async getAllUsers() {
@@ -32,6 +37,24 @@ class UserService {
       console.error('Error getting user by ID:', error);
       throw error;
     }
+  }
+
+  async getUserByEmail(email) {
+      try {
+          return await User.findOne({ email });
+      } catch (error) {
+          console.error('Error getting user by email:', error);
+          throw error;
+      }
+  }
+
+  async getUserByUsername(username) {
+      try {
+          return await User.findOne({ username });
+      } catch (error) {
+          console.error('Error getting user by username:', error);
+          throw error;
+      }
   }
 
   async updateUser(userId, updatedUserData) {

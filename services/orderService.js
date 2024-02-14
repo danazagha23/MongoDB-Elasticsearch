@@ -40,6 +40,15 @@ class OrderService {
     }
   }
 
+  async getUserOrders(userId) {
+    try {
+        const orders = await Order.find({ userId });
+        return orders;
+    } catch (error) {
+        throw new Error('Error fetching user orders');
+    }
+  }
+
   async updateOrder(orderId, updatedOrderData) {
     try {
       const updatedOrder = await Order.findByIdAndUpdate(orderId, updatedOrderData, { new: true });
