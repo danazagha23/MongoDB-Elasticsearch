@@ -1,4 +1,6 @@
 const userService = require('../services/userService');
+const roles = require('../config/roles');
+
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
@@ -64,6 +66,46 @@ class AuthService {
             return user;
         } catch (error) {
             console.error('Error reseting password:', error);
+            throw error;
+        }
+    }
+
+    async assignRoleToUser(username, role) {
+        try {
+            // Ensure the provided role is valid
+            const validRoles = roles.map(r => r.name);
+            if (!validRoles.includes(role)) {
+                throw new Error('Invalid role');
+            }
+            
+            const user = await userService.getUserByUsername(username);
+            if (!user) {
+                throw new Error('User not found');
+            }
+
+            user.role = role;
+            
+            await user.save();
+            
+            // if (user.role !== role) {
+            //     await user.remove();
+
+            //     const userData = {
+            //         username: user.username,
+            //         email: user.email,
+            //         password: user.password,
+            //         role: newRole // Update the role
+            //     };
+
+            //     // Create a new document with the updated role
+            //     const updatedUser =await userService.createUser(userData);
+
+            //     updatedUser.role = role;
+
+            //     return updatedUser;
+            // }
+        } catch (error) {
+            console.error('Error assigning role to customer:', error);
             throw error;
         }
     }

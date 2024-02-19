@@ -1,12 +1,13 @@
 const express = require('express');
 const router = express.Router();
 const authController = require('../controllers/authController');
-const { checkDuplicateEmail, checkDuplicateUsername, checkPassword } = require('../middlewares/verifySignup');
+const { validateSignupData, handleValidationErrors } = require('../middlewares/validateSignup');
+const authenticate = require('../middlewares/authJwt');
+const checkRole = require('../middlewares/checkRole');
 
-router.post('/signup', 
-    checkDuplicateEmail,
-    checkDuplicateUsername,
-    checkPassword,
+router.post('/signup',
+    validateSignupData,
+    handleValidationErrors,
     authController.signupUser
 );
 
@@ -16,6 +17,12 @@ router.post('/signin',
 
 router.post('/resetPassword', 
     authController.resetPassword
+);
+
+router.post('/assignRole', 
+    authenticate, 
+    checkRole('admin'),
+    authController.assignRoleToUser
 );
 
 module.exports = router;

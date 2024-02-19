@@ -36,8 +36,23 @@ const resetPassword = async (req, res) => {
   }
 };
 
+const assignRoleToUser = async (req, res) => {
+  try {
+    const username = req.body.username;
+    const role = req.body.role;
+
+    await authService.assignRoleToUser(username, role);
+
+    res.status(200).json({ message: 'Role assigned successfully' });
+  } catch (error) {
+    console.error('Error assigning role to customer:', error);
+    res.status(500).json({ message: 'Internal server error' });
+  }
+};
+
 module.exports = {
     signupUser,
     signinUser,
-    resetPassword
+    resetPassword,
+    assignRoleToUser
 };
