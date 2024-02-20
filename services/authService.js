@@ -4,7 +4,7 @@ const roles = require('../config/roles');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
-const { User, Admin, Customer } = require('../models/user');
+const User = require('../models/user');
 
 
 class AuthService {
@@ -83,27 +83,16 @@ class AuthService {
                 throw new Error('User not found');
             }
 
-            user.role = role;
-            
-            await user.save();
-            
-            // if (user.role !== role) {
-            //     await user.remove();
+            if (user.role !== role) {
+                const updatedUser = await User.findByIdAndUpdate(
+                    user._id,
+                    { role: role },
+                    { overwriteDiscriminatorKey: true, new: true }
+                  );
 
-            //     const userData = {
-            //         username: user.username,
-            //         email: user.email,
-            //         password: user.password,
-            //         role: newRole // Update the role
-            //     };
-
-            //     // Create a new document with the updated role
-            //     const updatedUser =await userService.createUser(userData);
-
-            //     updatedUser.role = role;
-
-            //     return updatedUser;
-            // }
+                return updatedUser;
+            }
+            return user;
         } catch (error) {
             console.error('Error assigning role to customer:', error);
             throw error;

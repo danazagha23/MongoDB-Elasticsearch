@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 
-// const options = { discriminatorKey: 'role' };
+const options = { discriminatorKey: 'role' };
 
 const userSchema = new mongoose.Schema(
     {
@@ -23,13 +23,9 @@ const userSchema = new mongoose.Schema(
         password: {
             type: String,
             required: true
-        },
-        role: {
-            type: String,
-            enum: ['admin', 'employee', 'customer']
         }
     },
-    // options
+    options
 );
 
 // Creating discriminators for different types of users
