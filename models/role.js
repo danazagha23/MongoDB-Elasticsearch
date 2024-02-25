@@ -1,13 +1,31 @@
 const mongoose = require('mongoose');
 
-const roleSchema = new mongoose.Schema({
+const UserRoleSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
         unique: true
     }
-})
+});
 
-const Role = mongoose.model("Role", roleSchema);
+const ApiRoleSchema = new mongoose.Schema({
+    method: {
+        type: String,
+        required: true
+    },
+    endpoint: {
+        type: String,
+        required: true,
+    },
+    role: {
+        type: String,
+        required: true,
+    }
+});
 
-module.exports = Role;
+const UserRole = mongoose.model("UserRole", UserRoleSchema);
+
+const ApiRole = mongoose.model("ApiRole", ApiRoleSchema);
+
+
+module.exports = { UserRole, ApiRole };

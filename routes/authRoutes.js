@@ -21,7 +21,7 @@ router.post('/resetPassword',
 
 router.post('/assignRole', 
     authenticate, 
-    checkRole('admin'),
+    checkRole,
     authController.assignRoleToUser
 );
 

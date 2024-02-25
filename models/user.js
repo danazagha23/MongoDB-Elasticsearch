@@ -1,5 +1,7 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
+const roleMappings = require('../config/roleMappings');
+
 
 const options = { discriminatorKey: 'role' };
 
@@ -28,18 +30,31 @@ const userSchema = new mongoose.Schema(
     options
 );
 
-// Creating discriminators for different types of users
-const adminSchema = new mongoose.Schema({});
+// Define schemas for different types of users
+const adminSchema = new mongoose.Schema({
+    roles: {
+        type: [String],
+        default: roleMappings.Admin
+    }
+});
 
 const employeeSchema = new mongoose.Schema({
     address: {
         type: String
+    },
+    roles: {
+        type: [String],
+        default: roleMappings.Employee
     }
 });
 
 const customerSchema = new mongoose.Schema({
     address: {
         type: String
+    },
+    roles: {
+        type: [String],
+        default: roleMappings.Customer
     }
 });
 
@@ -47,7 +62,7 @@ const CounterSchema = new mongoose.Schema({
     collectionName: String,
     sequential_id: { type: Number, default: 1 }
 });
-const Counter = mongoose.model('Counter', CounterSchema);
+const Counter = mongoose.model('counter', CounterSchema);
 
 
 userSchema.methods.isValidPassword = async function (password) {
@@ -87,10 +102,10 @@ userSchema.pre('save', async function (next) {
 
 
 // Create discriminator models
-const User = mongoose.model('User', userSchema);
+const User = mongoose.model('user', userSchema);
 
-User.discriminator('admin', adminSchema);
-User.discriminator('employee', employeeSchema);
-User.discriminator('customer', customerSchema);
+const Admin = User.discriminator('admin', adminSchema);
+const Employee = User.discriminator('employee', employeeSchema);
+const Customer = User.discriminator('customer', customerSchema);
 
-module.exports = User;
+module.exports = { User, Admin, Employee, Customer };

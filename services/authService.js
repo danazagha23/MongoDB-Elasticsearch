@@ -1,10 +1,9 @@
 const userService = require('../services/userService');
-const roles = require('../config/roles');
+const ApiRoles = require('../config/apiRoles');
 
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
 require('dotenv').config();
-const User = require('../models/user');
 
 
 class AuthService {
@@ -14,7 +13,7 @@ class AuthService {
             userData.password = hashedPassword;
 
             const newUser = await userService.createUser(userData);
-
+            
             return newUser;
         } catch (error) {
             console.error('Error signing up user:', error);
@@ -70,11 +69,11 @@ class AuthService {
         }
     }
 
-    async assignRoleToUser(username, role) {
+    async assignRoleToUser(username, newRole) {
         try {
             // Ensure the provided role is valid
-            const validRoles = roles.map(r => r.name);
-            if (!validRoles.includes(role)) {
+            const validRoles = ApiRoles.map(r => r.role);
+            if (!validRoles.includes(newRole)) {
                 throw new Error('Invalid role');
             }
             
@@ -83,16 +82,17 @@ class AuthService {
                 throw new Error('User not found');
             }
 
-            if (user.role !== role) {
-                const updatedUser = await User.findByIdAndUpdate(
-                    user._id,
-                    { role: role },
-                    { overwriteDiscriminatorKey: true, new: true }
-                  );
-
-                return updatedUser;
+            // Check if the user already has the new role
+            if (user.roles.includes(newRole)) {
+                throw new Error('User already has the specified role');
             }
+
+            user.roles.push(newRole);
+
+            await user.save();
+
             return user;
+
         } catch (error) {
             console.error('Error assigning role to customer:', error);
             throw error;

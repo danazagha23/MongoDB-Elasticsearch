@@ -1,0 +1,67 @@
+[
+    {
+        "method": "GET",
+        "endpoint": "/api/products/",
+        "role": "List_Products"
+    },
+    {
+        "method": "POST",
+        "endpoint": "/api/products/",
+        "role": "Create_Product"
+    },
+    {
+        "method": "PUT",
+        "endpoint": "/api/products/:id",
+        "role": "Update_Product"
+    },
+    {
+        "method": "DELETE",
+        "endpoint": "/api/products/:id",
+        "role": "Delete_Product"
+    },
+    {
+        "method": "GET",
+        "endpoint": "/api/users/",
+        "role": "List_Users"
+    },
+    {
+        "method": "POST",
+        "endpoint": "/api/users/",
+        "role": "Create_User"
+    },
+    {
+        "method": "PUT",
+        "endpoint": "/api/users/:id",
+        "role": "Update_User"
+    },
+    {
+        "method": "DELETE",
+        "endpoint": "/api/users/:id",
+        "role": "Delete_User"
+    },
+    {
+        "method": "GET",
+        "endpoint": "/api/orders/",
+        "role": "List_Orders"
+    },
+    {
+        "method": "POST",
+        "endpoint": "/api/orders/",
+        "role": "Create_Order"
+    },
+    {
+        "method": "PUT",
+        "endpoint": "/api/orders/:id",
+        "role": "Update_Order"
+    },
+    {
+        "method": "DELETE",
+        "endpoint": "/api/orders/:id",
+        "role": "Delete_Order"
+    },
+    {
+        "method": "POST",
+        "endpoint": "/api/auth/assignRole",
+        "role": "Assign_Role"
+    }
+  ]

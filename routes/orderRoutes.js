@@ -8,10 +8,10 @@ router.post('/', authenticate, orderController.createOrder);
 
 router.get('/', authenticate, orderController.getUserOrders);
 
-router.get('/all', authenticate, checkRole('admin'), orderController.getAllOrders);
-router.get('/:id', authenticate, checkRole('admin'), orderController.getOrderById);
-router.put('/:id', authenticate, checkRole('admin'), orderController.updateOrder);
-router.delete('/:id', authenticate, checkRole('admin'), orderController.deleteOrder);
+router.get('/all', authenticate, checkRole, orderController.getAllOrders);
+router.get('/:id', authenticate, checkRole, orderController.getOrderById);
+router.put('/:id', authenticate, checkRole, orderController.updateOrder);
+router.delete('/:id', authenticate, checkRole, orderController.deleteOrder);
 
 
 module.exports = router;

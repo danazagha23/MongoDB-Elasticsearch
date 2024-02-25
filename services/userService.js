@@ -1,15 +1,19 @@
-const User = require('../models/user');
+const { User, Admin, Employee, Customer } = require('../models/user');
 
 
 class UserService {
   async createUser(userData) {
     try {
       let newUser;
-      newUser = new User(userData);
+      
       if (userData.email === process.env.ADMIN_EMAIL.toLowerCase()) {
-          newUser.role = 'admin';
-      } else {
-          newUser.role = 'customer';
+          newUser = new Admin(userData);
+      } 
+      else if (userData.email === process.env.EMPLOYEE_EMAIL.toLowerCase()) {
+        newUser = new Employee(userData);
+      }
+      else {
+        newUser = new Customer(userData);
       }
       const savedUser = await newUser.save();
       

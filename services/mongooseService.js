@@ -1,9 +1,11 @@
 const mongoose = require('mongoose');
-const User = require('../models/user');
+const User = require('../models/user').User;
 const Product = require('../models/product');
 const Order = require('../models/order');
-const Role = require('../models/role');
-const rolesData = require('../config/roles.json');
+const { UserRole, ApiRole } = require('../models/role');
+const UserRolesData = require('../config/userRoles.json');
+const ApiRolesData = require('../config/apiRoles.json');
+
 
 
 const elasticsearchService = require('./elasticsearchService');
@@ -33,8 +35,8 @@ mongoose.connect(mongodbUrl)
 
 async function importRoles() {
     try {
-        // Insert roles from roles.json
-        await Role.insertMany(rolesData);
+        await UserRole.insertMany(UserRolesData);
+        await ApiRole.insertMany(ApiRolesData);
         console.log('Roles imported successfully');
     } catch (error) {
         console.error('Error importing roles:', error);
