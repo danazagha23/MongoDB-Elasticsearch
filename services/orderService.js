@@ -1,24 +1,48 @@
 const Order = require('../models/order');
-const elasticsearchService = require('./elasticsearchService');
+const Product = require('../models/product');
+const mongoose = require('mongoose');
+const productService = require('../services/productService');
+
 
 class OrderService {
   async createOrder(orderData) {
+
+    const session = await mongoose.startSession();
+    session.startTransaction();
+
     try {
       const newOrder = new Order(orderData);
-      const savedOrder = await newOrder.save();
 
-      // Remove internal fields
-      const orderWithoutInternalFields = savedOrder.toObject();
-      delete orderWithoutInternalFields._id;
-      delete orderWithoutInternalFields.__v;
+      // Check product availability and add each product to the order
+      for (const productId of orderData.products) {
+        const product = await Product.findById(productId).session(session);
+        if (!product || !product.available) {
+            throw new Error(`Product with ID ${productId} is not available.`);
+        }
 
-      const documentId = savedOrder._id.toString();
-      await elasticsearchService.index_Document('orders', documentId, orderWithoutInternalFields);
-      
+        product.quantity -= 1;
+        if(product.quantity < 1){
+          product.available = false;
+        }
+        await product.save();
+        
+        newOrder.totalPrice += product.price;
+      }
+
+      // Save the order
+      const savedOrder = await newOrder.save({ session });
+
+      // Commit the transaction
+      await session.commitTransaction();
+      session.endSession();
+
       return savedOrder;
     } catch (error) {
-      console.error('Error creating order:', error);
-      throw error;
+        // Rollback the transaction if any error occurs
+        await session.abortTransaction();
+        session.endSession();
+        console.error('Error creating order:', error);
+        throw error;
     }
   }
 
@@ -53,7 +77,7 @@ class OrderService {
     try {
       const updatedOrder = await Order.findByIdAndUpdate(orderId, updatedOrderData, { new: true });
       
-      return await elasticsearchService.update_Document('orders', orderId, updatedOrderData);
+      return updatedOrder;
     } catch (error) {
       console.error('Error updating order:', error);
       throw error;
@@ -64,7 +88,7 @@ class OrderService {
     try {
       const deletedOrder = await Order.findByIdAndDelete(orderId);
 
-      return await elasticsearchService.delete_Document('orders', orderId);
+      return deletedOrder
     } catch (error) {
       console.error('Error deleting order:', error);
       throw error;

@@ -1,5 +1,4 @@
 const Product = require('../models/product');
-const elasticsearchService = require('./elasticsearchService');
 
 class ProductService {
   async createProduct(productData) {
