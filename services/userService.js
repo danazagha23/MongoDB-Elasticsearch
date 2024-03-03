@@ -1,19 +1,20 @@
 const { User, Admin, Employee, Customer } = require('../models/user');
-
+const _ = require('underscore'); 
 
 class UserService {
   async createUser(userData) {
     try {
       let newUser;
+      const filteredData = _.pick(userData, User.userCreateSafeFields);
       
       if (userData.email === process.env.ADMIN_EMAIL.toLowerCase()) {
-          newUser = new Admin(userData);
+          newUser = new Admin(filteredData);
       } 
       else if (userData.email === process.env.EMPLOYEE_EMAIL.toLowerCase()) {
-        newUser = new Employee(userData);
+        newUser = new Employee(filteredData);
       }
       else {
-        newUser = new Customer(userData);
+        newUser = new Customer(filteredData);
       }
       const savedUser = await newUser.save();
       

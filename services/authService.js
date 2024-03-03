@@ -87,7 +87,8 @@ class AuthService {
                 throw new Error('User already has the specified role');
             }
 
-            user.roles.push(newRole);
+            const updatedRoles = [...user.roles, newRole];
+            user.roles = updatedRoles;
 
             await user.save();
 

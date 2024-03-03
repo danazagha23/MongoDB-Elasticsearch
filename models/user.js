@@ -2,7 +2,6 @@ const mongoose = require('mongoose');
 const bcrypt = require('bcrypt');
 const roleMappings = require('../config/roleMappings');
 
-
 const options = { discriminatorKey: 'role' };
 
 const userSchema = new mongoose.Schema(
@@ -29,6 +28,9 @@ const userSchema = new mongoose.Schema(
     },
     options
 );
+
+userSchema.statics.userCreateSafeFields = ['username', 'password', 'email'];
+
 
 // Define schemas for different types of users
 const adminSchema = new mongoose.Schema({

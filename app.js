@@ -1,5 +1,8 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const helmet = require("helmet");
+const rateLimit = require("express-rate-limit");
+
 require('dotenv').config();
 
 const mongoose = require('./services/mongooseService');  
@@ -12,6 +15,21 @@ const app = express();
 const PORT = 3000;
 
 app.use(bodyParser.json());
+
+//prevent Dos attacks
+app.use(express.urlencoded({ extended:  true }));
+app.use(express.json({limit:"10kb"}));//body-limit is 10kb
+
+// Helmet middleware for security headers
+app.use(helmet());
+
+// Rate limiting middleware
+const limiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100 // limit each IP to 100 requests per windowMs
+});
+app.use(limiter);
+
 
 app.use('/api/auth', authRoutes);
 
