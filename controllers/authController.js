@@ -2,7 +2,7 @@ const authService = require('../services/authService');
 
 const signupUser = async (req, res) => {
   try {
-    const userData = req.body;
+    const userData = req.validatedData;;
     await authService.signupUser(userData);
     res.json({ message: 'Registration successful' });
   } catch (error) {

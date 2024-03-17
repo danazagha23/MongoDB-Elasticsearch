@@ -29,9 +29,6 @@ const userSchema = new mongoose.Schema(
     options
 );
 
-userSchema.statics.userCreateSafeFields = ['username', 'password', 'email'];
-
-
 // Define schemas for different types of users
 const adminSchema = new mongoose.Schema({
     roles: {

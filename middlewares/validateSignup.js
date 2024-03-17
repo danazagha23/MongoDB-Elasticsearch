@@ -1,4 +1,4 @@
-const { body, validationResult } = require('express-validator');
+const { body, validationResult, matchedData } = require('express-validator');
 
 const validateSignupData = [
     body('username').notEmpty().withMessage('Username is required'),
@@ -14,4 +14,10 @@ const handleValidationErrors = (req, res, next) => {
     next();
 };
 
-module.exports = { validateSignupData, handleValidationErrors };
+// Middleware to extract validated and sanitized data
+const extractValidatedData = (req, res, next) => {
+    req.validatedData = matchedData(req);
+    next();
+};
+
+module.exports = { validateSignupData, handleValidationErrors, extractValidatedData };
