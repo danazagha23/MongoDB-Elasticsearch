@@ -2,6 +2,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
+const xss = require("xss-clean")
 
 require('dotenv').config();
 
@@ -16,12 +17,10 @@ const PORT = 3000;
 
 app.use(bodyParser.json());
 
-//prevent Dos attacks
-app.use(express.urlencoded({ extended:  true }));
-app.use(express.json({limit:"10kb"}));//body-limit is 10kb
-
 // Helmet middleware for security headers
 app.use(helmet());
+
+app.use(xss());
 
 // Rate limiting middleware
 const limiter = rateLimit({
@@ -38,6 +37,16 @@ app.use('/api/users', userRoutes);
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 
-app.listen(PORT, () => {
+//Temporary endpoint for XSS testing purposes only
+app.post('/api/xss-test', (req, res) => {
+  const sanitizedInput = req.body.input;
+
+  // Respond with sanitized input
+  res.status(200).json({ sanitizedInput });
+});
+
+const server = app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
+
+module.exports = server;
